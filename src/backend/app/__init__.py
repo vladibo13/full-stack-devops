@@ -1,5 +1,5 @@
 from flask import Flask
-from .extentions import db
+from .extensions import db
 from .routes import bp
 
 def create_app():

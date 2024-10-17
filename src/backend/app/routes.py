@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, abort
 from .models import User
-from .extentions import db
+from .extensions import db
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
