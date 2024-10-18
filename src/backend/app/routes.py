@@ -10,7 +10,7 @@ def get_users():
     return jsonify([user.to_dict() for user in users])
 
 @bp.route('/users/<int:id>', methods=['GET'])
-def get_user(user_id):
+def get_user(id):
     user = User.query.get_or_404(id)
     return jsonify(user.to_dict())
 
@@ -26,7 +26,7 @@ def create_user():
     return jsonify(new_user.to_dict()), 201
 
 @bp.route('/users/<int:id>', methods=['PUT'])
-def update_user(user_id):
+def update_user(id):
     user = User.query.get_or_404(id)
     data = request.json
 
@@ -36,7 +36,7 @@ def update_user(user_id):
     return jsonify(user.to_dict())
 
 @bp.route('/users/<int:id>', methods=['DELETE'])
-def delete_user(user_id):
+def delete_user(id):
     user = User.query.get_or_404(id)
     db.session.delete(user)
     db.session.commit()

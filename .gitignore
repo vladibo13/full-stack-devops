@@ -4,4 +4,5 @@
 venv*/
 __pycache__/
 dist/
-.env*/
+.env
+src/.DS_Store

@@ -30,7 +30,7 @@ const Users = () => {
     <div className="card mt-2">
       <div className="card-body">
         {data.map((user) => (
-          <div key={user.id}>
+          <div id={"user-id-" + user.id} key={user.id}>
             <h4>id = {user.id}</h4>
             <p>{user.name}</p>
           </div>
