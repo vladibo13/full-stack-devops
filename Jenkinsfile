@@ -18,6 +18,7 @@ pipeline {
             steps {
                 script {
                 sh '''
+                    echo '-------Setup Flask Backend---------'
                     # Install virtualenv if not installed
                     python3 -m pip install --user virtualenv || true
                     
@@ -38,6 +39,8 @@ pipeline {
                 script {
                     // Run Flask API in the background and save the process ID
                     sh '''
+                        echo '-------Run Flask Backend---------'
+
                         # Activate virtual environment
                         . ${VENV_DIR}/bin/activate
                         
@@ -66,6 +69,7 @@ pipeline {
             script {
                 // Stop Flask API if running
                 sh '''
+                    echo '-------Clean Up Enviroment---------'
                     if [ -f flask_pid.txt ]; then
                         kill $(cat flask_pid.txt) || true
                         rm flask_pid.txt
