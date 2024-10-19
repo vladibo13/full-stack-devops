@@ -19,8 +19,6 @@ pipeline {
                 script {
                 sh '''
                     echo '-------Setup Flask Backend---------'
-                    # Install virtualenv if not installed
-                    python3 -m pip install --user virtualenv || true
                     
                     # Create and activate virtual environment
                     python3 -m venv ${VENV_DIR}
@@ -68,6 +66,9 @@ pipeline {
                     sh '''
                     echo 'testing...'
 
+                    # Activate virtual environment
+                    . ${VENV_DIR}/bin/activate
+                    
                     # Install dependencies from requirements.txt
                     pip install -r src/tests/requirements.txt
 
