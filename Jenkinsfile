@@ -29,6 +29,14 @@ pipeline {
                     # Install dependencies from requirements.txt
                     pip install --upgrade pip
                     pip install -r src/backend/requirements.txt
+
+                    #add Env Variables
+                    echo '-------Env Variables Setup---------'
+                    export DB_USERNAME=${DB_USERNAME}
+                    export DB_PASSWORD=${DB_PASSWORD}
+                    export DB_HOST=${DB_HOST}
+                    export DB_NAME=${DB_NAME}
+                    export DB_PORT=${DB_PORT}
                 '''
                 }
             }
@@ -57,7 +65,15 @@ pipeline {
         stage('Test') {
             steps {
                 script {
+                    sh '''
                     echo 'testing...'
+
+                    # Install dependencies from requirements.txt
+                    pip install -r src/tests/requirements.txt
+
+                    # Run Backend test
+                    python3 tests/backen_testing.py
+                    '''
                 }
             }
         }
