@@ -5,25 +5,48 @@ pipeline {
     //     skipDefaultCheckout(true) // Avoids default checkout, we handle it manually
     // }
 
-    // environment {
-    //     APP_NAME = 'my-app'
-    // }
+    environment {
+        VENV_DIR = "venv"               // Virtual environment directory for Flask
+        FLASK_APP = "src/backend/run.py"     // Entry point of Flask API
+        FRONTEND_PORT = 3000             // React app port
+        BACKEND_PORT = 5000              // Flask API port
+    }
+
 
     stages {
-        stage('Checkout') {
+        stage('Setup Flask Backend') {
             steps {
                 script {
-                    echo 'checkout...'
-                    // Dynamically clone the right branch
-                    // git branch: "${env.BRANCH_NAME}", url: 'https://github.com/your-repo/your-project.git'
+                sh '''
+                    # Install virtualenv if not installed
+                    python3 -m pip install --user virtualenv || true
+                    
+                    # Create and activate virtual environment
+                    python3 -m venv ${VENV_DIR}
+                    . ${VENV_DIR}/bin/activate
+                    
+                    # Install dependencies from requirements.txt
+                    pip install --upgrade pip
+                    pip install -r src/backend/requirements.txt
+                '''
                 }
             }
         }
 
-        stage('Build') {
+        stage('Run Flask Backend') {
             steps {
                 script {
-                    echo 'building...'
+                    // Run Flask API in the background and save the process ID
+                    sh '''
+                        # Activate virtual environment
+                        . ${VENV_DIR}/bin/activate
+                        
+                        # Run Flask API in the background
+                        nohup flask run --host=0.0.0.0 --port=${BACKEND_PORT} &
+                        
+                        # Save the Flask process ID to a file
+                        echo $! > flask_pid.txt
+                    '''
                 }
             }
         }
@@ -38,9 +61,19 @@ pipeline {
     }
 
     post {
-        // always {
-        //     // cleanWs() // Clean up the workspace after every build
-        // }
+        always {
+            // Stop both Flask and React apps
+            script {
+                // Stop Flask API if running
+                sh '''
+                    if [ -f flask_pid.txt ]; then
+                        kill $(cat flask_pid.txt) || true
+                        rm flask_pid.txt
+                    fi
+                '''
+            }
+            cleanWs()  // Clean up workspace
+        }
         success {
             echo 'Pipeline executed successfully!'
         }
