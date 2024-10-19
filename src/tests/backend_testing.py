@@ -8,7 +8,7 @@ import pymysql
 load_dotenv()
 
 # API and Database setup
-API_URL = "http://127.0.0.1:5000/api/users"
+API_URL = "http://0.0.0.0:5000/api/users"
 DB_URL = (
     f'mysql+pymysql://{os.getenv("DB_USERNAME")}:{os.getenv("DB_PASSWORD")}'
     f'@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
