@@ -51,13 +51,13 @@ pipeline {
                         . ${VENV_DIR}/bin/activate
                         
                         # Run Flask API in the background
-                        nohup python src/backend/run.py --host=0.0.0.0 --port=${BACKEND_PORT} &
+                        nohup flask run --host=0.0.0.0 --port=${BACKEND_PORT} & 
                         
                         echo '-------wait for server to start---------'
                         sleep 10
 
                         echo '-------Flask Backend Test---------'
-                        curl -X GET http://localhost:5000/api/users
+                        curl -X GET http://0.0.0.0:5000/api/users
 
                         # Save the Flask process ID to a file
                         echo $! > flask_pid.txt
