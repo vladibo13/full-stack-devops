@@ -53,6 +53,9 @@ pipeline {
                         # Run Flask API in the background
                         nohup python src/backend/run.py --host=0.0.0.0 --port=${BACKEND_PORT} &
                         
+                        echo '-------wait for server to start---------'
+                        sleep 10
+
                         echo '-------Flask Backend Test---------'
                         curl -X GET http://localhost:5000/api/users
 
