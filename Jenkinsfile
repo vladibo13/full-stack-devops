@@ -54,10 +54,10 @@ pipeline {
                         # Run Flask API in the background
                         nohup flask run --host=0.0.0.0 --port=${BACKEND_PORT} > ${LOG_FILE} 2>&1 &
                         
-                        sh "cat ${LOG_FILE}"
-
                         echo '-------wait for server to start---------'
                         sleep 10
+
+                          sh "cat ${LOG_FILE}"
 
                         echo '-------Flask Backend Test---------'
                         curl -X GET http://0.0.0.0:5000/api/users
