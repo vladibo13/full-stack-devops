@@ -98,7 +98,6 @@ pipeline {
                         kill $(cat flask_pid.txt) || true
                         rm flask_pid.txt
                     fi
-                    sh "cat ${LOG_FILE}"
                 '''
             }
             cleanWs()  // Clean up workspace
