@@ -68,12 +68,12 @@ pipeline {
 
                     # Activate virtual environment
                     . ${VENV_DIR}/bin/activate
-                    
+
                     # Install dependencies from requirements.txt
                     pip install -r src/tests/requirements.txt
 
                     # Run Backend test
-                    python3 tests/backend_testing.py
+                    python3 src/tests/backend_testing.py
                     '''
                 }
             }
