@@ -52,7 +52,7 @@ pipeline {
                         . ${VENV_DIR}/bin/activate
                         
                         # Run Flask API in the background
-                        nohup flask run --host=0.0.0.0 --port=${BACKEND_PORT} > ${LOG_FILE} 2>&1 &
+                        nohup flask run --host=0.0.0.0 --port=${BACKEND_PORT} 
                         
                         echo '-------wait for server to start---------'
                         sleep 10
