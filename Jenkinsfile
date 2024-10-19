@@ -72,7 +72,7 @@ pipeline {
                     pip install -r src/tests/requirements.txt
 
                     # Run Backend test
-                    python3 tests/backen_testing.py
+                    python3 tests/backend_testing.py
                     '''
                 }
             }
