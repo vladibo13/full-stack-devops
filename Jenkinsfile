@@ -9,7 +9,8 @@ pipeline {
         VENV_DIR = "venv"               // Virtual environment directory for Flask
         FLASK_APP = "src/backend/run.py"     // Entry point of Flask API
         FRONTEND_PORT = 3000             // React app port
-        BACKEND_PORT = 5000              // Flask API port
+        BACKEND_PORT = 5000      // Flask API port
+        LOG_FILE = "flask.log"        
     }
 
 
@@ -51,8 +52,10 @@ pipeline {
                         . ${VENV_DIR}/bin/activate
                         
                         # Run Flask API in the background
-                        nohup flask run --host=0.0.0.0 --port=${BACKEND_PORT} & 
+                        nohup flask run --host=0.0.0.0 --port=${BACKEND_PORT} > ${LOG_FILE} 2>&1 &
                         
+                        sh "cat ${LOG_FILE}"
+
                         echo '-------wait for server to start---------'
                         sleep 10
 
@@ -97,6 +100,7 @@ pipeline {
                         kill $(cat flask_pid.txt) || true
                         rm flask_pid.txt
                     fi
+                    sh "cat ${LOG_FILE}"
                 '''
             }
             cleanWs()  // Clean up workspace
