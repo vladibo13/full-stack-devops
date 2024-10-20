@@ -1,26 +1,29 @@
-# Use Node.js for both build and runtime stages
-FROM node:18-alpine
+# Step 1: Build the application
+FROM node:18 AS build
 
-# Set the working directory in the container
+# Step 2: Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json to install dependencies
-COPY package*.json ./
+# Step 3: Copy package.json and package-lock.json (if available)
+COPY package.json package-lock.json ./
 
-# Install dependencies
+# Step 4: Install dependencies
 RUN npm install
 
-# Copy the rest of the app's source code
+# Step 5: Copy the rest of the application code
 COPY . .
 
-# Build the React app for production
+# Step 6: Build the Vite app
 RUN npm run build
 
-# Install `serve` to serve the build output
-RUN npm install -g serve
+# Step 7: Serve the app using a lightweight server
+FROM nginx:alpine
 
-# Expose the port on which the app will run
-EXPOSE 3000
+# Step 8: Copy built files to the Nginx HTML folder
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Start the React app using `serve`
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Step 9: Expose port 80
+EXPOSE 80
+
+# Step 10: Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,3 +1,5 @@
+import os
+import signal
 from flask import Blueprint, jsonify, request, abort
 from .models import User
 from .extensions import db
@@ -41,3 +43,9 @@ def delete_user(id):
     db.session.delete(user)
     db.session.commit()
     return jsonify({"message": "User deleted"}), 204
+
+@bp.route('/shutdown', methods=['POST'])
+def shutdown():
+    """Shut down the Flask server."""
+    os.kill(os.getpid(), signal.SIGINT)  # Raise SIGINT to stop the server
+    return 'Server shutting down...'
