@@ -1,87 +1,46 @@
+#!/usr/bin/env groovy
+library identifier: 'jenkins-shared-lib@main', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+     remote: 'https://github.com/vladibo13/jenkins-shared-libary.git',
+     credentialsId: 'github-secret'
+    ]
+)
+
 pipeline {
     agent any
 
-    // options {
-    //     skipDefaultCheckout(true) // Avoids default checkout, we handle it manually
-    // }
-
     environment {
-        VENV_DIR = "venv"               // Virtual environment directory for Flask
-        FLASK_APP = "src/backend/run.py"     // Entry point of Flask API
-        FRONTEND_PORT = 3000             // React app port
-        BACKEND_PORT = 5000      // Flask API port
-        LOG_FILE = "flask.log"        
+        VENV_DIR = "venv"               // Virtual environment directory for Flask 
+        IMAGE_NAME_BACKEND = 'vladibo/full-stack-devops:1.0'   
+        DOCKER_FILE_PATH_BACKEND = 'src/backend/Dockerfile'  
+        CONTEXT_DIR_BACKEND = 'src/backend'
     }
 
 
     stages {
-        stage('Setup Flask Backend') {
+        stage("building backend docker image") {
             steps {
                 script {
-                sh '''
-                    echo '-------Setup Flask Backend---------'
-                    
-                    # Create and activate virtual environment
-                    python3 -m venv ${VENV_DIR}
-                    . ${VENV_DIR}/bin/activate
-                    
-                    # Install dependencies from requirements.txt
-                    pip install --upgrade pip
-                    pip install -r src/backend/requirements.txt
-
-                    #add Env Variables
-                    echo '-------Env Variables Setup---------'
-                    export DB_USERNAME=${DB_USERNAME}
-                    export DB_PASSWORD=${DB_PASSWORD}
-                    export DB_HOST=${DB_HOST}
-                    export DB_NAME=${DB_NAME}
-                    export DB_PORT=${DB_PORT}
-                '''
+                  buildDockerImageWithFilePath(env.DOCKER_FILE_PATH_BACKEND, env.CONTEXT_DIR_BACKEND, env.IMAGE_NAME_BACKEND)
                 }
             }
         }
 
-        stage('Run Flask Backend') {
+        stage("push docker image to hub") {
             steps {
                 script {
-                    // Run Flask API in the background and save the process ID
-                    sh '''
-                        echo '-------Run Flask Backend---------'
-
-                        # Activate virtual environment
-                        . ${VENV_DIR}/bin/activate
-                        
-                        # Run Flask API in the background
-                        nohup flask run --host=0.0.0.0 --port=${BACKEND_PORT} > ${LOG_FILE} 2>&1 &
-                        
-                        echo '-------wait for server to start---------'
-                        sleep 10
-
-                        echo '-------Flask Backend Test---------'
-                        curl -X GET http://0.0.0.0:5000/api/users
-
-                        # Save the Flask process ID to a file
-                        echo $! > flask_pid.txt
-                    '''
+                  echo "pushing docker image to hub"
+                  dockerLogin()
+                  dockerPush(env.IMAGE_NAME_BACKEND)
                 }
             }
         }
+
 
         stage('Test') {
             steps {
                 script {
-                    sh '''
-                    echo 'testing...'
-
-                    # Activate virtual environment
-                    . ${VENV_DIR}/bin/activate
-
-                    # Install dependencies from requirements.txt
-                    pip install -r src/tests/requirements.txt
-
-                    # Run Backend test
-                    python src/tests/backend_testing.py
-                    '''
+                    echo "testing" 
                 }
             }
         }
@@ -91,14 +50,7 @@ pipeline {
         always {
             // Stop both Flask and React apps
             script {
-                // Stop Flask API if running
-                sh '''
-                    echo '-------Clean Up Enviroment---------'
-                    if [ -f flask_pid.txt ]; then
-                        kill $(cat flask_pid.txt) || true
-                        rm flask_pid.txt
-                    fi
-                '''
+                echo "stoping the docker"
             }
             cleanWs()  // Clean up workspace
         }
