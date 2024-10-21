@@ -21,7 +21,7 @@ pipeline {
         stage("building backend docker image") {
             steps {
                 script {
-                  buildDockerImageWithFilePath(env.DOCKER_FILE_PATH_BACKEND, env.CONTEXT_DIR_BACKEND, env.IMAGE_NAME_BACKEND)
+                  buildImageWithFilePath(env.DOCKER_FILE_PATH_BACKEND, env.CONTEXT_DIR_BACKEND, env.IMAGE_NAME_BACKEND)
                 }
             }
         }
