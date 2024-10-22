@@ -11,13 +11,35 @@ pipeline {
 
     environment {
         VENV_DIR = "venv"               // Virtual environment directory for Flask 
-        IMAGE_NAME_BACKEND = 'vladibo/full-stack-devops:1.0'   
+        IMAGE_NAME_BACKEND = 'vladibo/full-stack-devops'   
         DOCKER_FILE_PATH_BACKEND = 'src/backend/Dockerfile'  
         CONTEXT_DIR_BACKEND = 'src/backend'
     }
 
 
     stages {
+        stage('Read Version') {
+            steps {
+                script {
+                    def version = readFile('version.txt').trim()
+                    echo "Current version: ${version}"
+                }
+            }
+        }
+        stage('Increment Version') {
+            steps {
+                script {
+                    def version = readFile('version.txt').trim()
+                    def (major, minor, patch) = version.tokenize('.')
+                    patch = patch.toInteger() + 1
+                    def newVersion = "${major}.${minor}.${patch}"
+                    writeFile(file: 'version.txt', text: newVersion)
+                    env.IMAGE_NAME_BACKEND = "${env.IMAGE_NAME_BACKEND}:${newVersion}"
+                    echo "New version: ${env.IMAGE_NAME_BACKEND}"
+                }
+            }
+        }
+
         stage("building backend docker image") {
             steps {
                 script {

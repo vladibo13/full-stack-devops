@@ -33,8 +33,9 @@ services:
 
   # Flask Backend
   backend:
-    build:
-      context: ./src/backend
+    image: vladibo/full-stack-devops:1.0
+    # build:
+    #   context: ./src/backend
     container_name: flask_backend
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
