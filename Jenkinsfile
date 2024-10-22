@@ -11,9 +11,12 @@ pipeline {
 
     environment {
         VENV_DIR = "venv"               // Virtual environment directory for Flask 
-        IMAGE_NAME_BACKEND_PATH = 'vladibo/full-stack-devops'   
+        IMAGE_NAME_BACKEND_PATH = 'vladibo/full-stack-devops' 
         DOCKER_FILE_PATH_BACKEND = 'src/backend/Dockerfile'  
         CONTEXT_DIR_BACKEND = 'src/backend'
+        // IMAGE_NAME_FRONTEND_PATH = 'vladibo/full-stack-devops-frontend' 
+        // DOCKER_FILE_PATH_FRONTEND = 'src/frontend/Dockerfile'  
+        // CONTEXT_DIR_FRONTEND = 'src/frontend'
     }
 
 
@@ -54,6 +57,29 @@ pipeline {
                   echo "pushing docker image to hub"
                   dockerLogin()
                   dockerPush(env.IMAGE_NAME_BACKEND)
+                }
+            }
+        }
+
+        stage("commit version update") {
+            steps {
+                script {
+                   withCredentials([usernamePassword(credentialsId: 'github-secret', 
+                                      usernameVariable: 'USER', 
+                                      passwordVariable: 'PASS')]) {
+                        
+                        sh 'git config user.email jenkinsbot@example.com'
+                        sh 'git config user.name jenkinsbot'
+
+                        sh 'git status'
+                        sh 'git branch'
+                        sh 'git config --list'
+
+                        sh 'git remote set-url origin https://${USER}:${PASS}@github.com/vladibo13/full-stack-devops.git'
+                        sh 'git add .'
+                        sh 'git commit -m "jenkins version bump"'
+                        sh 'git push origin HEAD:main-docker'                
+                    }
                 }
             }
         }
