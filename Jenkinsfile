@@ -11,7 +11,7 @@ pipeline {
 
     environment {
         VENV_DIR = "venv"               // Virtual environment directory for Flask 
-        IMAGE_NAME_BACKEND = 'vladibo/full-stack-devops'   
+        IMAGE_NAME_BACKEND_PATH = 'vladibo/full-stack-devops'   
         DOCKER_FILE_PATH_BACKEND = 'src/backend/Dockerfile'  
         CONTEXT_DIR_BACKEND = 'src/backend'
     }
@@ -34,7 +34,7 @@ pipeline {
                     patch = patch.toInteger() + 1
                     def newVersion = "${major}.${minor}.${patch}"
                     writeFile(file: 'version.txt', text: newVersion)
-                    env.IMAGE_NAME_BACKEND = "${env.IMAGE_NAME_BACKEND}:${newVersion}"
+                    env.IMAGE_NAME_BACKEND = "${env.IMAGE_NAME_BACKEND_PATH}:${newVersion}"
                     echo "New version: ${env.IMAGE_NAME_BACKEND}"
                 }
             }
