@@ -38,6 +38,7 @@ pipeline {
                     def newVersion = "${major}.${minor}.${patch}"
                     writeFile(file: 'version.txt', text: newVersion)
                     env.IMAGE_NAME_BACKEND = "${env.IMAGE_NAME_BACKEND_PATH}:${newVersion}"
+                    env.IMAGE_TAG="${newVersion}"
                     echo "New version: ${env.IMAGE_NAME_BACKEND}"
                 }
             }
@@ -79,6 +80,20 @@ pipeline {
                         sh 'git add .'
                         sh 'git commit -m "jenkins version bump"'
                         sh 'git push origin HEAD:main-docker'                
+                    }
+                }
+            }
+        }
+
+        stage("deploy to aws ec2") {
+            steps {
+                script {
+                    echo "deploying the image to ec2"
+                    dockerComposeCommand = 'docker-compose -f docker-compose.yaml up --detach'
+                    shellCmd = 'bash ./advanced-project/ec2-script.sh "${IMAGE_TAG}"'
+                    sshagent(['aws-ec2-key']) {
+                        sh "scp docker-compose.yaml ec2-script.sh ec2-user@54.237.233.233:/home/ec2-user/advanced-project"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@54.237.233.233 ${shellCmd}"
                     }
                 }
             }

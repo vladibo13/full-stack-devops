@@ -33,7 +33,7 @@ services:
 
   # Flask Backend
   backend:
-    image: vladibo/full-stack-devops:1.0
+    image: vladibo/full-stack-devops:${IMAGE_TAG}
     # build:
     #   context: ./src/backend
     container_name: flask_backend
