@@ -92,8 +92,9 @@ pipeline {
                     dockerComposeCommand = 'docker-compose -f docker-compose.yaml up --detach'
                     shellCmd = "bash ./advanced-project/ec2-script.sh ${IMAGE_TAG}"
                     sshagent(['ec2-key']) {
-                        sh "scp docker-compose.yaml ec2-script.sh ec2-user@54.237.233.233:/home/ec2-user/advanced-project"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@54.237.233.233 ${shellCmd}"
+                        sh 'ssh -o StrictHostKeyChecking=no ec2-user@18.207.218.75 "echo Connected!"'
+                        // sh "scp docker-compose.yaml ec2-script.sh ec2-user@54.237.233.233:/home/ec2-user/advanced-project"
+                        // sh "ssh -o StrictHostKeyChecking=no ec2-user@54.237.233.233 ${shellCmd}"
                     }
                 }
             }
