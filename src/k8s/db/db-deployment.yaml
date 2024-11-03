@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:7.0 #
+          ports:
+            - containerPort: 3306
+          env:
+            # to do change to config map/ secrets
+            - name: MYSQL_ROOT_PASSWORD
+              value: "" # Set your root password
+            - name: MYSQL_DATABASE
+              value: "" # Database name
+            - name: MYSQL_USER
+              value: "" # Database username
+            - name: MYSQL_PASSWORD
+              value: "" # Database password

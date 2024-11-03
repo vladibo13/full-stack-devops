@@ -90,12 +90,22 @@ pipeline {
                 script {
                     echo "deploying the image to ec2"
                     dockerComposeCommand = 'docker-compose -f docker-compose.yaml up --detach'
+                    ec2Instance = "ec2-user@54.175.110.127"
                     shellCmd = "bash ./advanced-project/ec2-script.sh ${IMAGE_TAG}"
                     sshagent(['ec2-key']) {
-                        sh 'ssh -o StrictHostKeyChecking=no ec2-user@18.207.218.75 "echo Connected!"'
-                        sh "scp docker-compose.yaml ec2-script.sh ec2-user@18.207.218.75:/home/ec2-user/advanced-project"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@18.207.218.75 ${shellCmd}"
+                        sh "scp docker-compose.yaml ec2-script.sh ${ec2Instance}:/home/ec2-user/advanced-project"
+                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
                     }
+                }
+            }
+        }
+
+        stage("kubernetes") {
+             steps {
+                script {
+                    echo "testing kubernetes minikube config..."
+                    sh "minikube status" 
+                    sh "kubectl get svc"
                 }
             }
         }
