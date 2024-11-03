@@ -1,0 +1,4 @@
+apiVersion: v2
+name: app
+description: A Helm chart for deploying a React frontend, Flask backend, and MySQL database
+version: 0.1.0

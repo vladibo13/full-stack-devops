@@ -1,0 +1,23 @@
+frontend:
+  image: vladibo/full-stack-devops-frontend
+  tag: 1.0.1
+  replicas: 2
+  servicePort: 80
+
+# Flask Backend
+backend:
+  image: vladibo/full-stack-devops
+  tag: 1.0.20
+  replicas: 2
+  servicePort: 5000
+
+# MySQL Database
+mysql:
+  image: mysql:5.7
+  tag: 5.7
+  # to do change later
+  username: root
+  password: rootpassword
+  database: mydatabase
+  servicePort: 3306
+  pvcSize: 1Gi

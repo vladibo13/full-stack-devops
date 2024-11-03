@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image }}:{{ .Values.backend.tag }}
+          ports:
+            - containerPort: {{ .Values.backend.servicePort }}
+          env:
+            - name: DATABASE_HOST
+              value: "mysql-service"
+            - name: DATABASE_USER
+              value: {{ .Values.mysql.username }}
+            - name: DATABASE_PASSWORD
+              value: {{ .Values.mysql.password }}
+            - name: DATABASE_NAME
+              value: {{ .Values.mysql.database }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.backend.servicePort }}
+      targetPort: {{ .Values.backend.servicePort }}
+  selector:
+    app: backend
